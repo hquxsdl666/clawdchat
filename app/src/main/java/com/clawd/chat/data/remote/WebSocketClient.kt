@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import io.ktor.utils.io.core.consumeEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -130,7 +130,7 @@ class WebSocketClient @Inject constructor() {
         scope.launch {
             try {
                 val currentSession = session ?: return@launch
-                currentSession.incoming.collect { frame ->
+                currentSession.incoming.consumeEach { frame ->
                     if (frame is Frame.Text) {
                         handleMessage(frame.readText())
                     }
