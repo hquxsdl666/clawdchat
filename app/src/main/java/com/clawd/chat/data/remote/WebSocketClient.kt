@@ -7,8 +7,6 @@ import com.clawd.chat.data.model.GatewayMessage
 import com.clawd.chat.data.model.MessageRole
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.webSocketSession
@@ -27,9 +25,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -79,9 +74,6 @@ class WebSocketClient @Inject constructor() {
             install(WebSockets) {
                 pingInterval = HEARTBEAT_INTERVAL_MS
             }
-            install(Logging) {
-                level = LogLevel.ALL
-            }
         }
         
         return try {
@@ -123,7 +115,7 @@ class WebSocketClient @Inject constructor() {
     
     private suspend fun send(message: GatewayMessage) {
         try {
-            val jsonStr = json.encodeToString(message)
+            val jsonStr = json.encodeToString(GatewayMessage.serializer(), message)
             session?.outgoing?.send(Frame.Text(jsonStr))
         } catch (e: Exception) {
             Log.e(TAG, "Send failed", e)
@@ -155,27 +147,28 @@ class WebSocketClient @Inject constructor() {
             
             when (type) {
                 "assistant_message" -> {
-                    val msg = json.decodeFromString<GatewayMessage.AssistantMessage>(jsonStr)
+                    val content = jsonObject["content"]?.jsonPrimitive?.content ?: ""
+                    val timestamp = jsonObject["timestamp"]?.jsonPrimitive?.content?.toLongOrNull() 
+                        ?: System.currentTimeMillis()
                     val chatMessage = ChatMessage(
                         id = UUID.randomUUID().toString(),
-                        content = msg.content,
+                        content = content,
                         role = MessageRole.ASSISTANT,
-                        timestamp = msg.timestamp
+                        timestamp = timestamp
                     )
                     scope.launch { _messages.emit(chatMessage) }
                     _thinking.value = null
                 }
                 "thinking" -> {
-                    val thinking = json.decodeFromString<GatewayMessage.ThinkingStream>(jsonStr)
-                    _thinking.value = thinking.content
+                    val content = jsonObject["content"]?.jsonPrimitive?.content ?: ""
+                    _thinking.value = content
                 }
                 "status" -> {
-                    val status = json.decodeFromString<GatewayMessage.StatusUpdate>(jsonStr)
-                    Log.d(TAG, "Status: connected=${status.connected}, model=${status.currentModel}")
+                    Log.d(TAG, "Status update received")
                 }
                 "error" -> {
-                    val error = json.decodeFromString<GatewayMessage.Error>(jsonStr)
-                    Log.e(TAG, "Gateway error: ${error.code} - ${error.message}")
+                    val message = jsonObject["message"]?.jsonPrimitive?.content ?: "Unknown error"
+                    Log.e(TAG, "Gateway error: $message")
                 }
             }
         } catch (e: Exception) {

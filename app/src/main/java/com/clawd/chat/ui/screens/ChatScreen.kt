@@ -49,9 +49,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.clawd.chat.data.model.GatewayConfig
-import com.clawd.chat.data.model.ModelPresets
 import com.clawd.chat.ui.components.ConnectionStatusBar
 import com.clawd.chat.ui.components.MessageBubble
 import com.clawd.chat.ui.components.ModelSelector
@@ -61,7 +60,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
-    viewModel: ChatViewModel = hiltViewModel(),
+    viewModel: ChatViewModel = viewModel(),
     onNavigateToSettings: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -69,7 +68,6 @@ fun ChatScreen(
     val scope = rememberCoroutineScope()
     var showConfigDialog by remember { mutableStateOf(false) }
     
-    // Auto-scroll to bottom when new messages arrive
     LaunchedEffect(uiState.messages.size) {
         if (uiState.messages.isNotEmpty()) {
             listState.animateScrollToItem(uiState.messages.size - 1)
@@ -114,7 +112,6 @@ fun ChatScreen(
                 .padding(padding)
                 .imePadding()
         ) {
-            // Messages list
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -138,7 +135,6 @@ fun ChatScreen(
                     }
                 }
                 
-                // Connection error overlay
                 if (!uiState.isConnected && !uiState.isConnecting) {
                     Surface(
                         modifier = Modifier
@@ -171,7 +167,6 @@ fun ChatScreen(
                     }
                 }
                 
-                // Connecting indicator
                 if (uiState.isConnecting) {
                     Surface(
                         modifier = Modifier
@@ -189,13 +184,12 @@ fun ChatScreen(
                                 strokeWidth = 2.dp
                             )
                             Spacer(modifier = Modifier.width(12.dp))
-                            Text("Connecting to Gateway…")
+                            Text("Connecting to Gateway...")
                         }
                     }
                 }
             }
             
-            // Model selector bar
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.surface
@@ -221,7 +215,6 @@ fun ChatScreen(
                 }
             }
             
-            // Input bar
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.surface
@@ -236,7 +229,7 @@ fun ChatScreen(
                         value = uiState.inputText,
                         onValueChange = viewModel::onInputTextChange,
                         modifier = Modifier.weight(1f),
-                        placeholder = { Text("Type a message…") },
+                        placeholder = { Text("Type a message...") },
                         enabled = uiState.isConnected,
                         singleLine = false,
                         maxLines = 4,
@@ -269,7 +262,6 @@ fun ChatScreen(
         }
     }
     
-    // Config dialog
     if (showConfigDialog) {
         GatewayConfigDialog(
             onDismiss = { showConfigDialog = false },
