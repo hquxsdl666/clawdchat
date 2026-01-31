@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -128,7 +129,8 @@ class WebSocketClient @Inject constructor() {
     private fun startListening() {
         scope.launch {
             try {
-                session?.incoming?.collect { frame ->
+                val currentSession = session ?: return@launch
+                currentSession.incoming.collect { frame ->
                     if (frame is Frame.Text) {
                         handleMessage(frame.readText())
                     }
