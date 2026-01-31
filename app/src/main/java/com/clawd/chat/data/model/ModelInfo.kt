@@ -25,7 +25,7 @@ object ModelPresets {
         shortName = "Opus",
         provider = ModelProvider.ANTHROPIC,
         color = Color(0xFFCC785C),
-        description = "Most capable model for complex tasks"
+        description = "最强大的模型，适合复杂任务"
     )
     
     val CLAUDE_SONNET = ModelInfo(
@@ -34,7 +34,7 @@ object ModelPresets {
         shortName = "Sonnet",
         provider = ModelProvider.ANTHROPIC,
         color = Color(0xFFCC785C),
-        description = "Balanced performance and speed"
+        description = "性能与速度均衡"
     )
     
     val GPT4O = ModelInfo(
@@ -43,7 +43,7 @@ object ModelPresets {
         shortName = "GPT-4o",
         provider = ModelProvider.OPENAI,
         color = Color(0xFF10A37F),
-        description = "Multimodal model with vision"
+        description = "支持视觉的多模态模型"
     )
     
     val ALL_MODELS = listOf(CLAUDE_OPUS, CLAUDE_SONNET, GPT4O)

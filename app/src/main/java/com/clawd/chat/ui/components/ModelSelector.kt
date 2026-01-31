@@ -115,7 +115,7 @@ fun ModelSelector(
                             if (model.id == currentModel.id) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
-                                    contentDescription = "Selected",
+                                    contentDescription = "已选择",
                                     tint = currentModel.color
                                 )
                             }
@@ -156,8 +156,8 @@ fun ConnectionStatusBar(
         
         Text(
             text = if (isConnected) {
-                latencyMs?.let { "${it}ms" } ?: "Online"
-            } else "Offline",
+                latencyMs?.let { "${it}ms" } ?: "在线"
+            } else "离线",
             style = MaterialTheme.typography.labelSmall,
             color = if (isConnected) Color(0xFF22C55E) else Color(0xFFEF4444)
         )

@@ -96,7 +96,7 @@ fun ChatScreen(
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings"
+                            contentDescription = "设置"
                         )
                     }
                 },
@@ -148,7 +148,7 @@ fun ChatScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "Disconnected",
+                                text = "已断开连接",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onErrorContainer
                             )
@@ -161,7 +161,7 @@ fun ChatScreen(
                             }
                             Spacer(modifier = Modifier.height(8.dp))
                             Button(onClick = { showConfigDialog = true }) {
-                                Text("Configure")
+                                Text("配置")
                             }
                         }
                     }
@@ -184,7 +184,7 @@ fun ChatScreen(
                                 strokeWidth = 2.dp
                             )
                             Spacer(modifier = Modifier.width(12.dp))
-                            Text("Connecting to Gateway...")
+                            Text("正在连接网关...")
                         }
                     }
                 }
@@ -209,7 +209,7 @@ fun ChatScreen(
                     
                     if (!uiState.isConnected) {
                         TextButton(onClick = { showConfigDialog = true }) {
-                            Text("Connect")
+                            Text("连接")
                         }
                     }
                 }
@@ -229,7 +229,7 @@ fun ChatScreen(
                         value = uiState.inputText,
                         onValueChange = viewModel::onInputTextChange,
                         modifier = Modifier.weight(1f),
-                        placeholder = { Text("Type a message...") },
+                        placeholder = { Text("输入消息...") },
                         enabled = uiState.isConnected,
                         singleLine = false,
                         maxLines = 4,
@@ -251,7 +251,7 @@ fun ChatScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Send,
-                            contentDescription = "Send",
+                            contentDescription = "发送",
                             tint = if (uiState.inputText.isNotBlank() && uiState.isConnected) {
                                 MaterialTheme.colorScheme.primary
                             } else Color.Gray
@@ -290,7 +290,7 @@ fun GatewayConfigDialog(
     
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Gateway Configuration") },
+        title = { Text("网关配置") },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -298,22 +298,22 @@ fun GatewayConfigDialog(
                 OutlinedTextField(
                     value = host,
                     onValueChange = { host = it },
-                    label = { Text("Host") },
-                    placeholder = { Text("e.g., 100.64.0.1") },
+                    label = { Text("主机地址") },
+                    placeholder = { Text("例如: 100.64.0.1") },
                     singleLine = true
                 )
                 OutlinedTextField(
                     value = port,
                     onValueChange = { port = it },
-                    label = { Text("Port") },
+                    label = { Text("端口") },
                     placeholder = { Text("18789") },
                     singleLine = true
                 )
                 OutlinedTextField(
                     value = token,
                     onValueChange = { token = it },
-                    label = { Text("Auth Token (optional)") },
-                    placeholder = { Text("Bearer token") },
+                    label = { Text("认证令牌 (可选)") },
+                    placeholder = { Text("Bearer 令牌") },
                     singleLine = true
                 )
             }
@@ -323,12 +323,12 @@ fun GatewayConfigDialog(
                 onClick = { onConnect(host, port, token) },
                 enabled = host.isNotBlank() && port.isNotBlank()
             ) {
-                Text("Connect")
+                Text("连接")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text("取消")
             }
         }
     )
